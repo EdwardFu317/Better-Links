@@ -1,48 +1,55 @@
 # Better Links
 
-> Make Obsidian heading links far more resilient.
+<p>
+  <a href="./README.md">简体中文</a> |
+  <a href="./README.en.md"><strong>English</strong></a>
+</p>
 
-In knowledge management, there is always a tradeoff. Highly atomic notes can become fragmented and hard to maintain, while longer notes make precise links like `[[Note#Heading 1#Heading 2]]` much more fragile.
+> Keep Obsidian heading links working after renames, cuts, and refactors.
 
-When you rename headings, cut sections into another note, or change heading structure, native Obsidian link tracking can easily break down. **Better Links** is built to solve that problem.
+In long-form note taking, precise links like `[[Note#Heading 1#Heading 2]]` are powerful, but they are also fragile. As soon as you rename a heading, move a section into another note, or change heading structure, native link tracking can fall behind.
 
-## Core Features
+**Better Links** is built for that exact problem. It tracks heading-path changes in the background and repairs affected internal links automatically.
 
-### 1. Automatic refactor repair
+## What It Does
 
-When you **rename** content or **cut and paste** headings across notes, Better Links works in the background and automatically repairs affected links.
+### Automatic heading-rename repair
 
-- Cross-file moves: move a heading and its child content into another file, and backlinks pointing to that heading are updated automatically.
-- Parent-path awareness: Better Links detects the new heading context after a move so paths like `[[Note#Heading]]` and `[[Note#Parent#Child]]` stay accurate.
+- Updates normal heading links
+- Updates aliased heading links
+- Supports nested paths such as `[[Note#Parent Heading#Child Heading]]`
 
-### 2. Deep heading tracking
+### Automatic cut / paste move repair
 
-Better Links is not limited to simple filename changes. It tracks nested heading paths such as `[[Note#Header1#Header2]]`, so deeper links can survive renames and moves as well.
+- When a heading section is moved into another note, backlinks can be rewritten to the new file automatically
+- Tries to preserve the original path shape instead of unnecessarily expanding it
+- Supports nested heading paths during moves
 
-### 3. Performance for large repairs
+### Manual repair fallback
 
-The plugin is designed for vaults with heavy internal linking. It uses incremental indexing and redirect compaction so large-scale restructures stay practical.
+- Includes a `Repair links in current file` command
+- Useful when you want a second pass for edge cases not covered by the automatic flow
 
-### 4. Smarter structure detection
+### Optimized for larger link sets
 
-- Detects heading moves caused by cut and paste.
-- Handles heading-path resolution beyond a single level.
-- Supports both direct heading links and nested heading links during repair.
+- Uses incremental indexing and redirect compaction
+- Designed for heavier note refactors
+- Includes built-in stress-test fixtures in this repository
+
+## Who It Is For
+
+- Users who rely heavily on heading-level links
+- Writers who frequently reorganize long notes
+- People who want long-form notes without losing precise internal linking
 
 ## Problems It Solves
 
 | Scenario | Native Obsidian | Better Links |
 | :--- | :--- | :--- |
-| Rename a heading | Partially supported, sometimes unreliable | Updates references automatically |
-| Move a heading to another note | Links often break | Rewrites links to the new file |
-| Change nested heading structure | `[[#A#B]]` can become invalid | Recomputes the correct nested path |
-| Large content refactors | Manual cleanup | Bulk repair workflow |
-
-## Recommended For
-
-- Users who rely heavily on heading-level links.
-- Long-form note writers who reorganize content often.
-- Vaults with many backlinks and nested heading references.
+| Rename a heading | Can miss updates or break | Automatically updates references |
+| Move a heading to another note | Links often break | Rewrites them to the new file |
+| Change nested heading paths | `[[#A#B]]` can become invalid | Recomputes and repairs the path |
+| Large content refactors | Requires manual cleanup | Supports bulk repair workflows |
 
 ## Development
 
@@ -60,9 +67,16 @@ npm run build
 
 ## Stress Test Content
 
-This repository includes a stress-test vault fixture under `test-vault/stress-test/`.
+The repository includes stress-test fixtures under:
 
-To regenerate it:
+- `test-vault/stress-test/`
+
+The current fixture includes two larger scenarios:
+
+- Rename stress test: 80 backlink files, 400 links expected to update
+- Move stress test: 80 backlink files, 400 links expected to update
+
+To regenerate the fixture:
 
 ```powershell
 npm run stress:reset
@@ -75,3 +89,10 @@ To sync the current build into the local test-vault plugin folder:
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\sync-test-vault.ps1
 ```
+
+## Repository Layout
+
+- `src/`: plugin source code
+- `main.js`: current compiled build
+- `scripts/generate-stress-test.mjs`: stress-test fixture generator
+- `test-vault/stress-test/`: stress-test sample content
