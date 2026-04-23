@@ -1,0 +1,6 @@
+node_modules/
+test-vault/.obsidian/
+release/github-upload/
+.DS_Store
+Thumbs.db
+*.log
