@@ -1,4 +1,4 @@
-# Betterlink 
+# Better Link
 > 让 Obsidian 的标题链接（Header Links）从此坚不可摧。
 
 在知识管理中，我们常常面临一个两难境地：过度原子化（Atomic Notes）会导致信息碎片化，难以维护；而保持长篇笔记时，引用的 `[[文件名#一级标题#二级标题]]` 链接又极其脆弱。
