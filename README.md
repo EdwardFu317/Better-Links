@@ -96,3 +96,7 @@ powershell -ExecutionPolicy Bypass -File .\sync-test-vault.ps1
 - `main.js`：当前构建产物
 - `scripts/generate-stress-test.mjs`：压力测试生成脚本
 - `test-vault/stress-test/`：压力测试样例
+
+## 致谢
+
+本项目基于 [obsidian-persistent-links](https://github.com/ivan-lednev/obsidian-persistent-links) 的思路与代码演进而来，并遵循其 MIT 许可证要求保留相应署名。

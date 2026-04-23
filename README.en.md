@@ -96,3 +96,7 @@ powershell -ExecutionPolicy Bypass -File .\sync-test-vault.ps1
 - `main.js`: current compiled build
 - `scripts/generate-stress-test.mjs`: stress-test fixture generator
 - `test-vault/stress-test/`: stress-test sample content
+
+## Acknowledgements
+
+This project evolves from the ideas and code of [obsidian-persistent-links](https://github.com/ivan-lednev/obsidian-persistent-links), with attribution preserved in accordance with the original MIT license.
