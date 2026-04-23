@@ -654,21 +654,55 @@ export default class PersistentLinksPlugin extends Plugin {
     previousHeadings: HeadingSnapshot[],
     currentHeadings: HeadingSnapshot[]
   ) {
+    const previousHeadingCountsByName = this.getHeadingCountsByName(
+      previousHeadings
+    );
+    const previousHeadingKeys = new Set(
+      previousHeadings.map(({ path }) => createHeadingKey("", path))
+    );
+    const currentHeadingKeys = new Set(
+      currentHeadings.map(({ path }) => createHeadingKey("", path))
+    );
     const currentHeadingsByLine = new Map(
       currentHeadings.map((heading) => [heading.line, heading])
     );
+    const uniqueCurrentNewHeadingsByName =
+      this.getUniqueCurrentNewHeadingsByName(
+        currentHeadings,
+        previousHeadingKeys
+      );
 
     return previousHeadings
       .map((previousHeading) => {
+        const previousHeadingKey = createHeadingKey("", previousHeading.path);
+
+        if (currentHeadingKeys.has(previousHeadingKey)) {
+          return null;
+        }
+
+        const movedHeadingWithSameName =
+          previousHeadingCountsByName.get(previousHeading.heading) === 1
+            ? uniqueCurrentNewHeadingsByName.get(previousHeading.heading)
+            : undefined;
+
+        if (movedHeadingWithSameName) {
+          return {
+            from: previousHeading.path,
+            to: movedHeadingWithSameName.path,
+          };
+        }
+
         const updatedHeading = currentHeadingsByLine.get(previousHeading.line);
 
         if (!updatedHeading) {
           return null;
         }
 
+        const updatedHeadingKey = createHeadingKey("", updatedHeading.path);
+
         if (
-          createHeadingKey("", previousHeading.path) ===
-          createHeadingKey("", updatedHeading.path)
+          previousHeadingKey === updatedHeadingKey ||
+          previousHeadingKeys.has(updatedHeadingKey)
         ) {
           return null;
         }
@@ -696,6 +730,43 @@ export default class PersistentLinksPlugin extends Plugin {
           to: string;
         } => Boolean(redirect)
       );
+  }
+
+  private getUniqueCurrentNewHeadingsByName(
+    currentHeadings: HeadingSnapshot[],
+    previousHeadingKeys: Set<string>
+  ) {
+    const headingsByName = new Map<string, HeadingSnapshot[]>();
+
+    for (const heading of currentHeadings) {
+      if (previousHeadingKeys.has(createHeadingKey("", heading.path))) {
+        continue;
+      }
+
+      const existingHeadings = headingsByName.get(heading.heading);
+
+      if (existingHeadings) {
+        existingHeadings.push(heading);
+      } else {
+        headingsByName.set(heading.heading, [heading]);
+      }
+    }
+
+    return new Map(
+      [...headingsByName.entries()]
+        .filter(([, headings]) => headings.length === 1)
+        .map(([headingName, [heading]]) => [headingName, heading] as const)
+    );
+  }
+
+  private getHeadingCountsByName(headings: HeadingSnapshot[]) {
+    const counts = new Map<string, number>();
+
+    for (const { heading } of headings) {
+      counts.set(heading, (counts.get(heading) ?? 0) + 1);
+    }
+
+    return counts;
   }
 
   private getBacklinksToFile(targetPath: string): BacklinksBySource {

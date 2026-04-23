@@ -854,15 +854,40 @@ var _PersistentLinksPlugin = class _PersistentLinksPlugin extends import_obsidia
     return getHeadingSnapshots(this.app.metadataCache.getFileCache(file));
   }
   findHeadingRedirects(file, previousHeadings, currentHeadings) {
+    const previousHeadingCountsByName = this.getHeadingCountsByName(
+      previousHeadings
+    );
+    const previousHeadingKeys = new Set(
+      previousHeadings.map(({ path }) => createHeadingKey("", path))
+    );
+    const currentHeadingKeys = new Set(
+      currentHeadings.map(({ path }) => createHeadingKey("", path))
+    );
     const currentHeadingsByLine = new Map(
       currentHeadings.map((heading) => [heading.line, heading])
     );
+    const uniqueCurrentNewHeadingsByName = this.getUniqueCurrentNewHeadingsByName(
+      currentHeadings,
+      previousHeadingKeys
+    );
     return previousHeadings.map((previousHeading) => {
+      const previousHeadingKey = createHeadingKey("", previousHeading.path);
+      if (currentHeadingKeys.has(previousHeadingKey)) {
+        return null;
+      }
+      const movedHeadingWithSameName = previousHeadingCountsByName.get(previousHeading.heading) === 1 ? uniqueCurrentNewHeadingsByName.get(previousHeading.heading) : void 0;
+      if (movedHeadingWithSameName) {
+        return {
+          from: previousHeading.path,
+          to: movedHeadingWithSameName.path
+        };
+      }
       const updatedHeading = currentHeadingsByLine.get(previousHeading.line);
       if (!updatedHeading) {
         return null;
       }
-      if (createHeadingKey("", previousHeading.path) === createHeadingKey("", updatedHeading.path)) {
+      const updatedHeadingKey = createHeadingKey("", updatedHeading.path);
+      if (previousHeadingKey === updatedHeadingKey || previousHeadingKeys.has(updatedHeadingKey)) {
         return null;
       }
       if (!this.hasBacklinksToHeadingInSnapshots(
@@ -879,6 +904,30 @@ var _PersistentLinksPlugin = class _PersistentLinksPlugin extends import_obsidia
     }).filter(
       (redirect) => Boolean(redirect)
     );
+  }
+  getUniqueCurrentNewHeadingsByName(currentHeadings, previousHeadingKeys) {
+    const headingsByName = /* @__PURE__ */ new Map();
+    for (const heading of currentHeadings) {
+      if (previousHeadingKeys.has(createHeadingKey("", heading.path))) {
+        continue;
+      }
+      const existingHeadings = headingsByName.get(heading.heading);
+      if (existingHeadings) {
+        existingHeadings.push(heading);
+      } else {
+        headingsByName.set(heading.heading, [heading]);
+      }
+    }
+    return new Map(
+      [...headingsByName.entries()].filter(([, headings]) => headings.length === 1).map(([headingName, [heading]]) => [headingName, heading])
+    );
+  }
+  getHeadingCountsByName(headings) {
+    const counts = /* @__PURE__ */ new Map();
+    for (const { heading } of headings) {
+      counts.set(heading, (counts.get(heading) ?? 0) + 1);
+    }
+    return counts;
   }
   getBacklinksToFile(targetPath) {
     return this.backlinksByTargetFile.get(targetPath) ?? _PersistentLinksPlugin.EMPTY_BACKLINKS_BY_SOURCE;
