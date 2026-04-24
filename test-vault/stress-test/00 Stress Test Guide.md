@@ -1,4 +1,4 @@
-# Better Links 压力测试
+# Better Heading Links 压力测试
 
 这组用例专门用来测“几百条链接一起修复”的场景。
 

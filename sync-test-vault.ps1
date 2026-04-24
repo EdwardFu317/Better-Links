@@ -1,6 +1,6 @@
 $ErrorActionPreference = "Stop"
 
-$pluginDir = Join-Path $PSScriptRoot "test-vault\.obsidian\plugins\better-links"
+$pluginDir = Join-Path $PSScriptRoot "test-vault\.obsidian\plugins\better-heading-links"
 
 New-Item -ItemType Directory -Path $pluginDir -Force | Out-Null
 

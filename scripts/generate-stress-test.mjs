@@ -90,7 +90,7 @@ function createGuideNote() {
     RENAME_BACKLINK_FILES * LINKS_CHANGED_PER_RENAME_FILE;
   const moveChangedLinks = MOVE_BACKLINK_FILES * LINKS_CHANGED_PER_MOVE_FILE;
 
-  return `# Better Links 压力测试
+  return `# Better Heading Links 压力测试
 
 这组用例专门用来测“几百条链接一起修复”的场景。
 

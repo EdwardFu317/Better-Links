@@ -1,4 +1,4 @@
-# Better Links
+# Better Heading Links
 
 <p>
   <a href="./README.md">简体中文</a> |
@@ -9,7 +9,7 @@
 
 In long-form note taking, precise links like `[[Note#Heading 1#Heading 2]]` are powerful, but they are also fragile. As soon as you rename a heading, move a section into another note, or change heading structure, native link tracking can fall behind.
 
-**Better Links** is built for that exact problem. It tracks heading-path changes in the background and repairs affected internal links automatically.
+**Better Heading Links** is built for that exact problem. It tracks heading-path changes in the background and repairs affected internal links automatically.
 
 ## What It Does
 
@@ -44,7 +44,7 @@ In long-form note taking, precise links like `[[Note#Heading 1#Heading 2]]` are 
 
 ## Problems It Solves
 
-| Scenario | Native Obsidian | Better Links |
+| Scenario | Native Obsidian | Better Heading Links |
 | :--- | :--- | :--- |
 | Rename a heading | Can miss updates or break | Automatically updates references |
 | Move a heading to another note | Links often break | Rewrites them to the new file |
